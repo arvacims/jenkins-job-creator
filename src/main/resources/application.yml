@@ -1,0 +1,17 @@
+gerrit:
+  ssh:
+    keyfile: ${GERRIT_PRIVATE_SSH_KEYFILE}
+    port: ${GERRIT_SSH_PORT}
+    hostname: ${GERRIT_HOST_NAME}
+    user: ${GERRIT_USER}
+
+jenkins:
+  baseUrl: ${JENKINS_BASE_URL}
+  user: ${JENKINS_USER}
+  password: ${JENKINS_PASSWORD}
+  gerritUser: ${JENKINS_GERRIT_USER}
+
+rest:
+  timeout:
+    connect: 10000
+    read: 60000
