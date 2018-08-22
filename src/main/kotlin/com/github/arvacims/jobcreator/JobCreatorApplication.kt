@@ -3,7 +3,6 @@ package com.github.arvacims.jobcreator
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.ComponentScan
 import org.springframework.core.env.Environment
 import org.springframework.http.client.BufferingClientHttpRequestFactory
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
@@ -11,7 +10,6 @@ import org.springframework.http.client.support.BasicAuthorizationInterceptor
 import org.springframework.web.client.RestTemplate
 
 @SpringBootApplication
-@ComponentScan("com.github.arvacims.jobcreator")
 class JobCreatorApplication {
 
     @Bean
@@ -34,11 +32,18 @@ class JobCreatorApplication {
 
     @Bean
     fun gerritConfig(env: Environment): GerritConfig {
-        val gerritHostName = env.getRequiredProperty("gerrit.ssh.hostname")
-        val gerritSshPort = env.getRequiredProperty("gerrit.ssh.port", Integer::class.java).toInt()
-        val gerritSshKeyFile = env.getRequiredProperty("gerrit.ssh.keyfile")
-        val gerritUser = env.getRequiredProperty("gerrit.ssh.user")
-        return GerritConfig(gerritHostName, gerritUser, gerritSshPort, gerritSshKeyFile)
+        val user = env.getRequiredProperty("gerrit.ssh.user")
+        val hostname = env.getRequiredProperty("gerrit.ssh.hostname")
+        val sshPort = env.getRequiredProperty("gerrit.ssh.port", Integer::class.java).toInt()
+        val sshKeyFile = env.getRequiredProperty("gerrit.ssh.key.file")
+        val sshKeyPass = env.getRequiredProperty("gerrit.ssh.key.pass")
+        return GerritConfig(
+                user = user,
+                hostname = hostname,
+                sshPort = sshPort,
+                sshKeyFile = sshKeyFile,
+                sshKeyPass = sshKeyPass
+        )
     }
 
 }

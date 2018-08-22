@@ -8,22 +8,23 @@ import org.apache.http.auth.UsernamePasswordCredentials
 import java.io.File
 
 class GerritConfig(
-        private val gerritHostName: String,
-        private val gerritUser: String,
-        private val gerritSshPort: Int,
-        private val gerritSshKeyFile: String
+        private val user: String,
+        private val hostname: String,
+        private val sshPort: Int,
+        private val sshKeyFile: String,
+        private val sshKeyPass: String?
 ) : GerritConnectionConfig2 {
 
     override fun getGerritHostName(): String {
-        return gerritHostName
+        return hostname
     }
 
     override fun getGerritUserName(): String {
-        return gerritUser
+        return user
     }
 
     override fun getGerritAuthKeyFilePassword(): String {
-        return ""
+        return sshKeyPass ?: ""
     }
 
     override fun getGerritEMail(): String {
@@ -31,7 +32,7 @@ class GerritConfig(
     }
 
     override fun getGerritSshPort(): Int {
-        return gerritSshPort
+        return sshPort
     }
 
     override fun getWatchdogTimeoutSeconds(): Int {
@@ -43,7 +44,7 @@ class GerritConfig(
     }
 
     override fun getGerritAuthKeyFile(): File {
-        return File(gerritSshKeyFile)
+        return File(sshKeyFile)
     }
 
     override fun getGerritProxy(): String {
@@ -59,7 +60,7 @@ class GerritConfig(
     }
 
     override fun getGerritAuthentication(): Authentication {
-        return Authentication(File(gerritSshKeyFile), gerritUser)
+        return Authentication(File(sshKeyFile), user, sshKeyPass)
     }
 
     override fun getWatchdogTimeoutMinutes(): Int {

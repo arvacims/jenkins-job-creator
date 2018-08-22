@@ -11,19 +11,20 @@ Use Maven or `docker image build .`.
 
 - Using a custom `application.yml`:
 ~~~~
-docker run -v </path/to/application.yml>:/app/config/application.yml <docker image>`
+docker run -v /path/to/application.yml:/app/config/application.yml <docker image>`
 ~~~~
 
 - Using environment variables:
 ~~~~
 docker run \
-    -e 'GERRIT_HOST_NAME=<Gerrit hostname>' \
-    -e 'GERRIT_SSH_PORT=<Gerrit SSH port>' \
-    -e 'GERRIT_USER=<Gerrit user>' \
-    -e 'GERRIT_PRIVATE_SSH_KEYFILE=<private SSH key file of Gerrit user>' \
-    -e 'JENKINS_BASE_URL=<Jenkins base URL>' \
-    -e 'JENKINS_USER=<Jenkins user>' \
-    -e 'JENKINS_PASSWORD=<Jenkins password>' \
-    -e 'JENKINS_GERRIT_USER=<non-interactive Gerrit user>' \
+    -e 'GERRIT_USER=user-name' \
+    -e 'GERRIT_HOSTNAME=gerrit.your-domain.com' \
+    -e 'GERRIT_SSH_PORT=29418' \
+    -e 'GERRIT_SSH_KEY_FILE=/config/id_rsa' \
+    -e 'GERRIT_SSH_KEY_PASS=secret' \
+    -e 'JENKINS_BASE_URL=https://jenkins.your-domain.com' \
+    -e 'JENKINS_USER=jenkins-owner' \
+    -e 'JENKINS_PASSWORD=secret' \
+    -e 'JENKINS_GERRIT_USER=jenkins' \
     <docker image>`
 ~~~~
