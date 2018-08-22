@@ -5,7 +5,11 @@ import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
 
 @Service
-class JenkinsService(env: Environment, private val gerritConfig: GerritConfig, private val jenkinsConnector: JenkinsConnector) {
+class JenkinsService(
+        env: Environment,
+        private val gerritConfig: GerritConfig,
+        private val jenkinsConnector: JenkinsConnector
+) {
 
     private val log = LoggerFactory.getLogger(JenkinsService::class.java)
 
