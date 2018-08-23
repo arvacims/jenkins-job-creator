@@ -26,13 +26,15 @@ class RestTemplateLoggingInterceptor : ClientHttpRequestInterceptor {
         val requestMethod = request.method
         val requestPath = request.uri
         val responseStatus = response.rawStatusCode
-        val durationInMs = (System.nanoTime() - timeIn) / 1000000
         val headers = response.headers
         val content = response.body.toLog()
-        log.info("Request $requestMethod $requestPath got response $responseStatus $headers $content ${durationInMs}ms")
+
+        val durationInMs = (System.nanoTime() - timeIn) / 1000000
+
+        log.debug("Request $requestMethod $requestPath got response $responseStatus $headers $content ${durationInMs}ms")
     }
 
 }
 
-private fun InputStream.toLog(): String = String(this.readBytes(), Charsets.UTF_8)
-        .replace("\n", "").replace("\r", "")
+private fun InputStream.toLog(): String =
+        String(this.readBytes(), Charsets.UTF_8).replace("\n", "").replace("\r", "")

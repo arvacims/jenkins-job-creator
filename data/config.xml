@@ -1,4 +1,4 @@
-<?xml version='1.1' encoding='UTF-8'?>
+<?xml version="1.1" encoding="UTF-8"?>
 <flow-definition plugin="workflow-job@2.22">
     <actions/>
     <description/>
@@ -24,8 +24,7 @@
         </hudson.model.ParametersDefinitionProperty>
         <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
             <triggers>
-                <com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.GerritTrigger
-                        plugin="gerrit-trigger@2.27.5">
+                <com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.GerritTrigger plugin="gerrit-trigger@2.27.5">
                     <spec/>
                     <gerritProjects>
                         <com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.data.GerritProject>
@@ -97,9 +96,7 @@
             <submoduleCfg class="list"/>
             <extensions>
                 <hudson.plugins.git.extensions.impl.BuildChooserSetting>
-                    <buildChooser
-                            class="com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.GerritTriggerBuildChooser"
-                            plugin="gerrit-trigger@2.27.5">
+                    <buildChooser class="com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.GerritTriggerBuildChooser" plugin="gerrit-trigger@2.27.5">
                         <separator>#</separator>
                     </buildChooser>
                 </hudson.plugins.git.extensions.impl.BuildChooserSetting>

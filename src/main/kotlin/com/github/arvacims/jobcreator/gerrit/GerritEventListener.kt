@@ -1,5 +1,6 @@
-package com.github.arvacims.jobcreator
+package com.github.arvacims.jobcreator.gerrit
 
+import com.github.arvacims.jobcreator.jenkins.JenkinsService
 import com.sonymobile.tools.gerrit.gerritevents.GerritEventListener
 import com.sonymobile.tools.gerrit.gerritevents.dto.GerritEvent
 import com.sonymobile.tools.gerrit.gerritevents.dto.attr.RefUpdate
@@ -21,7 +22,7 @@ class GerritEventListener(private val jenkinsService: JenkinsService) : GerritEv
         val project = event.refUpdate.project
         val branch = event.refUpdate.getBranch()
         if ((event.refUpdate.isProjectCreation() || event.refUpdate.isBranchCreation()) && !event.refUpdate.isChangesBranch())
-            jenkinsService.createJob(project, branch)
+            jenkinsService.createOrUpdateJob(project, branch)
     }
 }
 

@@ -1,86 +1,63 @@
 package com.github.arvacims.jobcreator
 
+import com.github.arvacims.jobcreator.jenkins.JenkinsErrorException
+import com.github.arvacims.jobcreator.jenkins.JenkinsJobNotFoundException
+import com.github.arvacims.jobcreator.jenkins.JenkinsService
 import org.slf4j.LoggerFactory
-import org.springframework.http.MediaType
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.HttpMediaTypeNotAcceptableException
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import javax.servlet.http.HttpServletRequest
 
 @RestController
-@RequestMapping("/jenkins/job-configs")
+@RequestMapping("/jobs")
 class JobCreatorController(private val jenkinsService: JenkinsService) {
 
     private val log = LoggerFactory.getLogger(JobCreatorController::class.java)
 
-    @RequestMapping(
-            method = [RequestMethod.GET],
-            path = ["/default"]
-    )
-    fun getDefaultJenkinsJobConfig(): String {
-        return jenkinsService.getDefaultJobConfig()
+    @PostMapping("/create/all")
+    fun createOrUpdateAllJobs() {
+        // TODO: Use Gerrit REST API to find all projects & branches and then create or update all jobs.
+        throw NotImplementedError()
     }
 
-    @RequestMapping(
-            method = [RequestMethod.POST],
-            path = ["/update/default"]
-    )
-    fun updateAllJenkinsJobs(): Set<String> {
-        return jenkinsService.updateAllJobConfigs(null)
+    @PostMapping("/create/{project}/{branch}")
+    fun createOrUpdateJob() {
+        // TODO: Create or update the job.
+        throw NotImplementedError()
     }
 
-    @RequestMapping(
-            method = [RequestMethod.POST],
-            path = ["/update"]
-    )
-    fun updateAllJenkinsJobs(@RequestBody config: String): Set<String> {
-        return jenkinsService.updateAllJobConfigs(config)
-    }
+    @GetMapping("/{jobName}")
+    fun getJobConfig(@PathVariable jobName: String): String =
+            jenkinsService.getJobConfig(jobName)
 
-    @RequestMapping(
-            method = [RequestMethod.GET],
-            path = ["/{jobName}"]
-    )
-    fun getJenkinsJob(@PathVariable jobName: String): String {
-        return jenkinsService.getJobConfig(jobName)
-    }
-
-    @RequestMapping(
-            method = [RequestMethod.POST],
-            path = ["/{jobName}/update"]
-    )
-    fun updateJenkinsJob(@PathVariable jobName: String, @RequestBody config: String): String? {
-        return jenkinsService.updateJobConfig(config, jobName)
-    }
-
-    @ResponseBody
-    @ExceptionHandler(HttpMediaTypeNotAcceptableException::class)
-    fun handleHttpMediaTypeNotAcceptableException(): String {
-        return "acceptable MIME type:" + MediaType.APPLICATION_JSON_VALUE
+    @PostMapping("/{jobName}")
+    fun updateJobConfig(@PathVariable jobName: String, @RequestBody configXml: String) {
+        jenkinsService.updateJobConfig(jobName, configXml)
     }
 
     @ExceptionHandler(JenkinsJobNotFoundException::class)
     fun onJenkinsJobNotFoundException(
             request: HttpServletRequest,
             exception: JenkinsJobNotFoundException
-    ): ResponseEntity<Error> {
-        log.warn("Request {} failed due to non existing jenkins job.", request.requestURI, exception)
-        return exception.toWsErrorResponse(httpStatus = exception.status)
+    ): ResponseEntity<WsError> {
+        log.warn("Request {} failed as the Jenkins job could not be found.", request.requestURI)
+        return exception.toWsErrorResponse(httpStatus = HttpStatus.NOT_FOUND)
     }
 
     @ExceptionHandler(JenkinsErrorException::class)
     fun onJenkinsErrorException(
             request: HttpServletRequest,
             exception: JenkinsErrorException
-    ): ResponseEntity<Error> {
-        log.warn("Request {} failed due to error when requesting jenkins api.", request.requestURI, exception)
-        return exception.toWsErrorResponse(httpStatus = exception.status)
+    ): ResponseEntity<WsError> {
+        log.warn("Request {} failed due to some error when requesting the Jenkins API.", request.requestURI, exception)
+        return exception.toWsErrorResponse()
     }
 
 }

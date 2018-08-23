@@ -1,4 +1,4 @@
-package com.github.arvacims.jobcreator
+package com.github.arvacims.jobcreator.gerrit
 
 import com.sonymobile.tools.gerrit.gerritevents.GerritConnectionConfig2
 import com.sonymobile.tools.gerrit.gerritevents.ssh.Authentication
