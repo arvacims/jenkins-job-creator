@@ -36,7 +36,10 @@ class JobCreatorApplication {
         val hostname = env.getRequiredProperty("gerrit.ssh.hostname")
         val sshPort = env.getRequiredProperty("gerrit.ssh.port", Integer::class.java).toInt()
         val sshKeyFile = env.getRequiredProperty("gerrit.ssh.key.file")
-        val sshKeyPass = env.getRequiredProperty("gerrit.ssh.key.pass")
+
+        val rawSshKeyPass = env.getProperty("gerrit.ssh.key.pass")
+        val sshKeyPass = if (rawSshKeyPass.isNullOrEmpty()) null else rawSshKeyPass
+
         return GerritConfig(
                 user = user,
                 hostname = hostname,

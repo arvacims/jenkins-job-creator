@@ -5,7 +5,7 @@ gerrit:
     port: ${GERRIT_SSH_PORT}
     key:
       file: ${GERRIT_SSH_KEY_FILE}
-      pass: ${GERRIT_SSH_KEY_PASS}
+      pass: ${GERRIT_SSH_KEY_PASS:}
 
 jenkins:
   baseUrl: ${JENKINS_BASE_URL}
