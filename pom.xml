@@ -24,7 +24,7 @@
         <kotlin.compiler.incremental>false</kotlin.compiler.incremental>
         <kotlin.version>1.2.61</kotlin.version>
 
-        <gerrit-events.version>2.0.1</gerrit-events.version>
+        <gerrit-events.version>2.12.1</gerrit-events.version>
     </properties>
 
     <dependencies>
