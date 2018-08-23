@@ -4,31 +4,9 @@ import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.core.env.Environment
-import org.springframework.http.client.BufferingClientHttpRequestFactory
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
-import org.springframework.http.client.support.BasicAuthorizationInterceptor
-import org.springframework.web.client.RestTemplate
 
 @SpringBootApplication
 class JobCreatorApplication {
-
-    @Bean
-    fun restTemplateJenkins(env: Environment): RestTemplate {
-        // set timeouts
-        val requestFactory = HttpComponentsClientHttpRequestFactory().apply {
-            setConnectTimeout(env.getRequiredProperty("rest.timeout.connect", Int::class.java))
-            setReadTimeout(env.getRequiredProperty("rest.timeout.read", Int::class.java))
-        }
-        val restTemplate = RestTemplate(BufferingClientHttpRequestFactory(requestFactory))
-        restTemplate.interceptors.add(
-                BasicAuthorizationInterceptor(
-                        env.getRequiredProperty("jenkins.user"),
-                        env.getRequiredProperty("jenkins.password")
-                )
-        )
-        restTemplate.interceptors.add(RestTemplateLoggingInterceptor())
-        return restTemplate
-    }
 
     @Bean
     fun gerritConfig(env: Environment): GerritConfig {

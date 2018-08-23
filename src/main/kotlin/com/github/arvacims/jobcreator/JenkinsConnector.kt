@@ -5,14 +5,18 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
+import org.springframework.http.client.BufferingClientHttpRequestFactory
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
+import org.springframework.http.client.support.BasicAuthorizationInterceptor
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 
 @Component
-class JenkinsConnector(env: Environment, private val restTemplate: RestTemplate) {
+class JenkinsConnector(env: Environment) {
 
+    private val restTemplate = restTemplate(env)
     private val jenkinsUrl = env.getRequiredProperty("jenkins.baseUrl")
 
     fun createJob(jobConfigXml: String, jobName: String): String? {
@@ -107,4 +111,20 @@ class JenkinsErrorException(jobName: String, exception: HttpClientErrorException
         Exception("Error while requesting jenkins job '$jobName'", exception) {
 
     val status: HttpStatus = exception.statusCode
+}
+
+private fun restTemplate(env: Environment): RestTemplate {
+    val requestFactory = HttpComponentsClientHttpRequestFactory().apply {
+        setConnectTimeout(env.getRequiredProperty("rest.timeout.connect", Int::class.java))
+        setReadTimeout(env.getRequiredProperty("rest.timeout.read", Int::class.java))
+    }
+    val restTemplate = RestTemplate(BufferingClientHttpRequestFactory(requestFactory))
+    restTemplate.interceptors.add(
+            BasicAuthorizationInterceptor(
+                    env.getRequiredProperty("jenkins.user"),
+                    env.getRequiredProperty("jenkins.password")
+            )
+    )
+    restTemplate.interceptors.add(RestTemplateLoggingInterceptor())
+    return restTemplate
 }
