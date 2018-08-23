@@ -3,6 +3,7 @@ package com.github.arvacims.jobcreator
 import org.slf4j.LoggerFactory
 import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
+import java.io.File
 
 @Service
 class JenkinsService(
@@ -13,7 +14,7 @@ class JenkinsService(
 
     private val log = LoggerFactory.getLogger(JenkinsService::class.java)
 
-    private val defaultConfig = javaClass.getResource("/jenkins-jobs/config.xml").readText()
+    private val defaultConfig = File("data/config.xml").readText()
 
     private val jenkinsGerritUser = env.getRequiredProperty("jenkins.gerritUser")
 
