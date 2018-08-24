@@ -14,48 +14,24 @@ class GerritEventListener(private val jenkinsService: JenkinsService) : GerritEv
     private val log = LoggerFactory.getLogger(GerritEventListener::class.java)
 
     override fun gerritEvent(event: GerritEvent) {
-        log.info("Gerrit event: ${event.eventType}")
+        if (event is RefUpdated) onRefUpdated(event)
     }
 
-    fun gerritEvent(event: RefUpdated) {
-        log.info(event.refUpdate.toLogMessage())
-        val project = event.refUpdate.project
-        val branch = event.refUpdate.getBranch()
-        if ((event.refUpdate.isProjectCreation() || event.refUpdate.isBranchCreation()) && !event.refUpdate.isChangesBranch())
+    private fun onRefUpdated(event: RefUpdated) {
+        val refUpdate = event.refUpdate
+        log.info(refUpdate.toLogMessage())
+
+        val isHeadUpdate = refUpdate.ref.startsWith("refs/heads/")
+        val isInitial = refUpdate.oldRev == "0000000000000000000000000000000000000000"
+
+        // Only trigger Jenkins when a NEW BRANCH is created!
+        if (isHeadUpdate && isInitial) {
+            val project = refUpdate.project
+            val branch = refUpdate.refName
             jenkinsService.createOrUpdateJob(project, branch)
+        }
     }
 }
 
-fun RefUpdate.getBranch(): String {
-    val branch = this.refName.substringAfterLast("/")
-    return if (branch == "config")                                  // "refs/meta/config" is updated on project creation
-        "master"
-    else
-        branch
-}
-
-fun RefUpdate.isProjectCreation(): Boolean {
-    val branch = this.refName.substringAfterLast("/")
-    return branch == "config" && this.isInitial()
-}
-
-fun RefUpdate.isBranchCreation(): Boolean {
-    val branch = this.refName.substringAfterLast("/")
-    return branch != "master" && this.isInitial()
-}
-
-fun RefUpdate.isInitial(): Boolean {
-    val oldRev = this.oldRev
-    return oldRev.all { it == "0".single() }
-}
-
-fun RefUpdate.isChangesBranch(): Boolean {
-    return this.refName.substringAfter("/").substringBefore("/") == "changes"
-}
-
-fun RefUpdate.toLogMessage(): String = "Gerrit refUpdated event - " +
-        "Project: '${this.project}', " +
-        "oldRev: '${this.oldRev}', " +
-        "newRev: '${this.newRev}', " +
-        "ref: '${this.ref}', " +
-        "refName: '${this.refName}'"
+private fun RefUpdate.toLogMessage(): String =
+        "RefUpdate(project=$project, oldRev=$oldRev, newRev=$newRev, ref=$ref, refName=$refName)"

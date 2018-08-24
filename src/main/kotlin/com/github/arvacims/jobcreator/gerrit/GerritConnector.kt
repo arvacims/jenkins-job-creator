@@ -16,15 +16,16 @@ class GerritServerConnector(
 
     @PostConstruct
     private fun init() {
-        log.info("Establishing connection to Gerrit server: ${gerritConfig.gerritHostName}")
+        val hostName = gerritConfig.gerritHostName
 
-        val connection = GerritConnection(gerritConfig.gerritHostName, gerritConfig)
-        val handler = GerritHandler()
-        handler.addListener(gerritEventListener)
-        connection.handler = handler
-        connection.start()
+        log.info("Connecting to '{}' ...", hostName)
 
-        log.info("Connection to ${gerritConfig.gerritHostName} established")
+        GerritConnection(hostName, gerritConfig).apply {
+            handler = GerritHandler().apply { addListener(gerritEventListener) }
+            start()
+        }
+
+        log.info("Connected to '{}'.", hostName)
     }
 
 }
