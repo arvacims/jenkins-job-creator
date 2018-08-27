@@ -17,6 +17,9 @@ class JenkinsService(
 
     private val gerritUser = env.getRequiredProperty("jenkins.gerritUser")
 
+    private val templateCache: Map<JobType, String> =
+            JobType.values().map { it to File(it.templatePath).readText() }.toMap()
+
     fun createOrUpdateJobs(project: String, branch: String) {
         JobType.values().forEach { createOrUpdateJob(project, branch, it) }
     }
@@ -57,8 +60,7 @@ class JenkinsService(
     }
 
     private fun fillConfigTemplate(project: String, branch: String, jobType: JobType): String =
-            File(jobType.templatePath).readText()
-                    .replace("{PROJECT_NAME}", project)
+            templateCache.getValue(jobType).replace("{PROJECT_NAME}", project)
                     .replace("{BRANCH}", branch)
                     .replace("{GERRIT_USER}", gerritUser)
                     .replace("{GERRIT_HOST_NAME}", gerritConfig.gerritHostName)
