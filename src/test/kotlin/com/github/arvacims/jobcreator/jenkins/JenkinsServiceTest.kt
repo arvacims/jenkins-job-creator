@@ -27,11 +27,13 @@ class JenkinsServiceTest {
         val branch = "demo-branch"
 
         // when
-        jenkinsService.createOrUpdateJob(project, branch)
-        val config = jenkinsService.getJobConfig("${project}_$branch")
+        jenkinsService.createOrUpdateJobs(project, branch)
+        val configMerge = jenkinsService.getJobConfig("${project}_$branch")
+        val configReview = jenkinsService.getJobConfig("${project}_${branch}_review")
 
         // then
-        Assert.assertNotNull(config)
+        Assert.assertNotNull(configMerge)
+        Assert.assertNotNull(configReview)
     }
 
     @Test

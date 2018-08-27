@@ -15,14 +15,20 @@ class JenkinsService(
 
     private val log = LoggerFactory.getLogger(JenkinsService::class.java)
 
-    private val configTemplate = File("data/config.xml").readText()
     private val gerritUser = env.getRequiredProperty("jenkins.gerritUser")
 
-    fun createOrUpdateJob(project: String, branch: String) {
+    fun createOrUpdateJobs(project: String, branch: String) {
+        JobType.values().forEach { createOrUpdateJob(project, branch, it) }
+    }
+
+    private fun createOrUpdateJob(project: String, branch: String, jobType: JobType) {
         log.info("Creating or updating Jenkins job for project '{}' / branch '{}' ...", project, branch)
 
-        val jobName = "${project}_$branch"
-        val configXml = fillConfigTemplate(project, branch)
+        val jobName = when (jobType) {
+            JobType.MERGE  -> "${project}_$branch"
+            JobType.REVIEW -> "${project}_${branch}_review"
+        }
+        val configXml = fillConfigTemplate(project, branch, jobType)
 
         try {
             val currentConfigXml = jenkinsConnector.getJobConfig(jobName)
@@ -50,13 +56,20 @@ class JenkinsService(
         jenkinsConnector.updateJobConfig(jobName, configXml)
     }
 
-    private fun fillConfigTemplate(project: String, branch: String): String =
-            configTemplate
+    private fun fillConfigTemplate(project: String, branch: String, jobType: JobType): String =
+            File(jobType.templatePath).readText()
                     .replace("{PROJECT_NAME}", project)
                     .replace("{BRANCH}", branch)
                     .replace("{GERRIT_USER}", gerritUser)
                     .replace("{GERRIT_HOST_NAME}", gerritConfig.gerritHostName)
                     .replace("{GERRIT_PORT}", gerritConfig.gerritSshPort.toString())
+
+}
+
+enum class JobType(val templatePath: String) {
+
+    MERGE("data/merge.xml"),
+    REVIEW("data/review.xml")
 
 }
 

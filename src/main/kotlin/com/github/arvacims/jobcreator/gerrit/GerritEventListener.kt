@@ -28,7 +28,7 @@ class GerritEventListener(private val jenkinsService: JenkinsService) : GerritEv
         if (isHeadUpdate && isInitial) {
             val project = refUpdate.project
             val branch = refUpdate.refName
-            jenkinsService.createOrUpdateJob(project, branch)
+            jenkinsService.createOrUpdateJobs(project, branch)
         }
     }
 }
