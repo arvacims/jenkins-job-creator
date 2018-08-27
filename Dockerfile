@@ -11,6 +11,7 @@ RUN mvn clean verify
 FROM openjdk:8-jre-alpine
 
 COPY --from=builder /workspace/target/app.jar /app/
+COPY data/ /app/data
 
 EXPOSE 8080
 
