@@ -1,6 +1,9 @@
 gerrit:
+  user: ${GERRIT_USER}
+  rest:
+    baseUrl: ${GERRIT_BASE_URL}
+    password: ${GERRIT_PASSWORD}
   ssh:
-    user: ${GERRIT_USER}
     hostname: ${GERRIT_HOSTNAME}
     port: ${GERRIT_SSH_PORT}
     key:

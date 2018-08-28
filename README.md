@@ -22,6 +22,8 @@ docker run \
     -e 'GERRIT_SSH_PORT=29418' \
     -e 'GERRIT_SSH_KEY_FILE=/config/id_rsa' \
     -e 'GERRIT_SSH_KEY_PASS=secret' \
+    -e 'GERRIT_BASE_URL=https://gerrit.your-domain.com'
+    -e 'GERRIT_PASSWORD=secret'
     -e 'JENKINS_BASE_URL=https://jenkins.your-domain.com' \
     -e 'JENKINS_USER=jenkins-owner' \
     -e 'JENKINS_PASSWORD=secret' \

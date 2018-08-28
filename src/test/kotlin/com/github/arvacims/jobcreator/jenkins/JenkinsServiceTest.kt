@@ -2,6 +2,7 @@ package com.github.arvacims.jobcreator.jenkins
 
 import com.github.arvacims.jobcreator.EnvironmentFromResource
 import com.github.arvacims.jobcreator.createGerritConfig
+import com.github.arvacims.jobcreator.gerrit.GerritRestConnector
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Ignore
@@ -16,8 +17,9 @@ class JenkinsServiceTest {
     fun setUp() {
         val env = EnvironmentFromResource()
         val gerritConfig = createGerritConfig(env)
+        val gerritRestConnector = GerritRestConnector(env)
         val jenkinsConnector = JenkinsConnector(env)
-        jenkinsService = JenkinsService(gerritConfig, jenkinsConnector, env)
+        jenkinsService = JenkinsService(gerritConfig, gerritRestConnector, jenkinsConnector, env)
     }
 
     @Test

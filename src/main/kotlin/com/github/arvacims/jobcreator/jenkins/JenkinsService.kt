@@ -1,6 +1,7 @@
 package com.github.arvacims.jobcreator.jenkins
 
 import com.github.arvacims.jobcreator.gerrit.GerritConfig
+import com.github.arvacims.jobcreator.gerrit.GerritRestConnector
 import org.slf4j.LoggerFactory
 import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
@@ -9,6 +10,7 @@ import java.io.File
 @Service
 class JenkinsService(
         private val gerritConfig: GerritConfig,
+        private val gerritRestConnector: GerritRestConnector,
         private val jenkinsConnector: JenkinsConnector,
         env: Environment
 ) {
@@ -47,6 +49,12 @@ class JenkinsService(
             log.info("Jenkins job '{}' was not found. Creating it ...", jobName)
             jenkinsConnector.createJob(jobName, configXml)
         }
+    }
+
+    fun createOrUpdateAllJobs() {
+        log.info("Creating or updating Jenkins jobs for all Gerrit projects/branches")
+        gerritRestConnector.getProjectBranches()
+                .forEach { createOrUpdateJobs(it.project.id, it.branch.ref.substringAfterLast("/")) }
     }
 
     fun getJobNames(): Set<String> =

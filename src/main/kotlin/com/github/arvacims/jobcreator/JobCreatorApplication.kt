@@ -20,7 +20,7 @@ fun main(args: Array<String>) {
 }
 
 fun createGerritConfig(env: Environment): GerritConfig {
-    val user = env.getRequiredProperty("gerrit.ssh.user")
+    val user = env.getRequiredProperty("gerrit.user")
     val hostname = env.getRequiredProperty("gerrit.ssh.hostname")
     val sshPort = env.getRequiredProperty("gerrit.ssh.port", Integer::class.java).toInt()
     val sshKeyFile = env.getRequiredProperty("gerrit.ssh.key.file")

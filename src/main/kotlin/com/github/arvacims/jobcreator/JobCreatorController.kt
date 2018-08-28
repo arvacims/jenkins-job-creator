@@ -23,14 +23,12 @@ class JobCreatorController(private val jenkinsService: JenkinsService) {
 
     @PostMapping("/create/all")
     fun createOrUpdateAllJobs() {
-        // TODO: Use Gerrit REST API to find all projects & branches and then create or update all jobs.
-        throw NotImplementedError()
+        jenkinsService.createOrUpdateAllJobs()
     }
 
     @PostMapping("/create/{project}/{branch}")
-    fun createOrUpdateJob() {
-        // TODO: Create or update the job.
-        throw NotImplementedError()
+    fun createOrUpdateJob(@PathVariable project: String, @PathVariable branch: String) {
+        jenkinsService.createOrUpdateJobs(project, branch)
     }
 
     @GetMapping("/{jobName}")
