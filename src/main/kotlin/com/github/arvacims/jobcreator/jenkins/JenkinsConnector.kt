@@ -1,6 +1,5 @@
 package com.github.arvacims.jobcreator.jenkins
 
-import com.github.arvacims.jobcreator.RestTemplateLoggingInterceptor
 import com.github.arvacims.jobcreator.restTemplate
 import org.springframework.core.env.Environment
 import org.springframework.http.HttpEntity
@@ -8,9 +7,6 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.http.client.BufferingClientHttpRequestFactory
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
-import org.springframework.http.client.support.BasicAuthorizationInterceptor
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
