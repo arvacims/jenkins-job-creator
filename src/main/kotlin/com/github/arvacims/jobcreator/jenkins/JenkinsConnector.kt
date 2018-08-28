@@ -1,6 +1,7 @@
 package com.github.arvacims.jobcreator.jenkins
 
 import com.github.arvacims.jobcreator.RestTemplateLoggingInterceptor
+import com.github.arvacims.jobcreator.restTemplate
 import org.springframework.core.env.Environment
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -18,8 +19,15 @@ import org.springframework.web.util.UriComponentsBuilder
 @Component
 class JenkinsConnector(env: Environment) {
 
-    private val restTemplate = restTemplate(env)
     private val jenkinsUrl = env.getRequiredProperty("jenkins.baseUrl")
+    private val jenkinsUser = env.getRequiredProperty("jenkins.user")
+    private val jenkinsPassword = env.getRequiredProperty("jenkins.password")
+
+    private val restTemplate: RestTemplate
+
+    init {
+        restTemplate = restTemplate(env, jenkinsUser, jenkinsPassword)
+    }
 
     fun createJob(jobName: String, configXml: String) {
         val uri = UriComponentsBuilder.fromHttpUrl("$jenkinsUrl/createItem")
@@ -93,22 +101,3 @@ class JenkinsJobNotFoundException(jobName: String) :
 
 class JenkinsErrorException(jobName: String, exception: HttpClientErrorException) :
         Exception("Requesting Jenkins job '$jobName' failed.", exception)
-
-private fun restTemplate(env: Environment): RestTemplate {
-    val requestFactory = HttpComponentsClientHttpRequestFactory().apply {
-        setConnectTimeout(env.getRequiredProperty("rest.timeout.connect", Int::class.java))
-        setReadTimeout(env.getRequiredProperty("rest.timeout.read", Int::class.java))
-    }
-
-    val restTemplate = RestTemplate(BufferingClientHttpRequestFactory(requestFactory))
-
-    val authorizationInterceptor = BasicAuthorizationInterceptor(
-            env.getRequiredProperty("jenkins.user"),
-            env.getRequiredProperty("jenkins.password")
-    )
-
-    restTemplate.interceptors.add(authorizationInterceptor)
-    restTemplate.interceptors.add(RestTemplateLoggingInterceptor())
-
-    return restTemplate
-}

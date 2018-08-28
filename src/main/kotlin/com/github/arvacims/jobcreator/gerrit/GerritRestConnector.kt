@@ -3,6 +3,7 @@ package com.github.arvacims.jobcreator.gerrit
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.arvacims.jobcreator.RestTemplateLoggingInterceptor
+import com.github.arvacims.jobcreator.restTemplate
 import org.springframework.core.env.Environment
 import org.springframework.http.client.BufferingClientHttpRequestFactory
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
@@ -13,8 +14,15 @@ import org.springframework.web.client.RestTemplate
 @Component
 class GerritRestConnector(env: Environment) {
 
-    private val restTemplate = restTemplate(env)
     private val gerritUrl = env.getRequiredProperty("gerrit.rest.baseUrl")
+    private val gerritUser = env.getRequiredProperty("gerrit.user")
+    private val gerritPassword = env.getRequiredProperty("gerrit.rest.password")
+
+    private val restTemplate: RestTemplate
+
+    init {
+        restTemplate = restTemplate(env, gerritUser, gerritPassword)
+    }
 
     fun getProjectBranches(): List<ProjectBranch> {
         return getProjects()
@@ -45,22 +53,3 @@ class GerritRestConnector(env: Environment) {
 }
 
 data class ProjectBranch(val project: GerritProject, val branch: GerritBranch)
-
-private fun restTemplate(env: Environment): RestTemplate {
-    val requestFactory = HttpComponentsClientHttpRequestFactory().apply {
-        setConnectTimeout(env.getRequiredProperty("rest.timeout.connect", Int::class.java))
-        setReadTimeout(env.getRequiredProperty("rest.timeout.read", Int::class.java))
-    }
-
-    val restTemplate = RestTemplate(BufferingClientHttpRequestFactory(requestFactory))
-
-    val authorizationInterceptor = BasicAuthorizationInterceptor(
-            env.getRequiredProperty("gerrit.user"),
-            env.getRequiredProperty("gerrit.rest.password")
-    )
-
-    restTemplate.interceptors.add(authorizationInterceptor)
-    restTemplate.interceptors.add(RestTemplateLoggingInterceptor())
-
-    return restTemplate
-}

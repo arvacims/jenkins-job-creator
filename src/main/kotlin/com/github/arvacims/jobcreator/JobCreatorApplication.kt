@@ -5,6 +5,10 @@ import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.core.env.Environment
+import org.springframework.http.client.BufferingClientHttpRequestFactory
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
+import org.springframework.http.client.support.BasicAuthorizationInterceptor
+import org.springframework.web.client.RestTemplate
 
 @SpringBootApplication
 class JobCreatorApplication {
@@ -35,4 +39,20 @@ fun createGerritConfig(env: Environment): GerritConfig {
             sshKeyFile = sshKeyFile,
             sshKeyPass = sshKeyPass
     )
+}
+
+fun restTemplate(env: Environment, user: String, password: String): RestTemplate {
+    val requestFactory = HttpComponentsClientHttpRequestFactory().apply {
+        setConnectTimeout(env.getRequiredProperty("rest.timeout.connect", Int::class.java))
+        setReadTimeout(env.getRequiredProperty("rest.timeout.read", Int::class.java))
+    }
+
+    val restTemplate = RestTemplate(BufferingClientHttpRequestFactory(requestFactory))
+
+    val authorizationInterceptor = BasicAuthorizationInterceptor(user, password)
+
+    restTemplate.interceptors.add(authorizationInterceptor)
+    restTemplate.interceptors.add(RestTemplateLoggingInterceptor())
+
+    return restTemplate
 }
