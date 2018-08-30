@@ -52,9 +52,11 @@ class JenkinsService(
     }
 
     fun createOrUpdateAllJobs() {
-        log.info("Creating or updating Jenkins jobs for all Gerrit projects/branches")
-        gerritRestConnector.getProjectBranches()
-                .forEach { createOrUpdateJobs(it.project.id, it.branch.ref.substringAfterLast("/")) }
+        log.info("Creating or updating Jenkins jobs for all branches of active projects ...")
+
+        gerritRestConnector.getProjectBranches().forEach {
+            createOrUpdateJobs(it.project.id, it.branch.name)
+        }
     }
 
     fun getJobNames(): Set<String> =

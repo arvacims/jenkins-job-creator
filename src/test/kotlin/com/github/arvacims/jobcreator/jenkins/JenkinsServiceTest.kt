@@ -16,10 +16,7 @@ class JenkinsServiceTest {
     @Before
     fun setUp() {
         val env = EnvironmentFromResource()
-        val gerritConfig = createGerritConfig(env)
-        val gerritRestConnector = GerritRestConnector(env)
-        val jenkinsConnector = JenkinsConnector(env)
-        jenkinsService = JenkinsService(gerritConfig, gerritRestConnector, jenkinsConnector, env)
+        jenkinsService = JenkinsService(createGerritConfig(env), GerritRestConnector(env), JenkinsConnector(env), env)
     }
 
     @Test

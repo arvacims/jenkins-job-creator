@@ -24,8 +24,8 @@ fun main(args: Array<String>) {
 }
 
 fun createGerritConfig(env: Environment): GerritConfig {
-    val user = env.getRequiredProperty("gerrit.user")
-    val hostname = env.getRequiredProperty("gerrit.ssh.hostname")
+    val user = env.getRequiredProperty("gerrit.ssh.user")
+    val hostname = env.getRequiredProperty("gerrit.ssh.host")
     val sshPort = env.getRequiredProperty("gerrit.ssh.port", Integer::class.java).toInt()
     val sshKeyFile = env.getRequiredProperty("gerrit.ssh.key.file")
 
@@ -41,14 +41,22 @@ fun createGerritConfig(env: Environment): GerritConfig {
     )
 }
 
-fun restTemplate(env: Environment, user: String, password: String): RestTemplate {
+fun restTemplateGerrit(env: Environment): RestTemplate =
+        restTemplate(env, "gerrit")
+
+fun restTemplateJenkins(env: Environment): RestTemplate =
+        restTemplate(env, "jenkins")
+
+private fun restTemplate(env: Environment, envKeyPrefix: String): RestTemplate {
     val requestFactory = HttpComponentsClientHttpRequestFactory().apply {
-        setConnectTimeout(env.getRequiredProperty("rest.timeout.connect", Int::class.java))
-        setReadTimeout(env.getRequiredProperty("rest.timeout.read", Int::class.java))
+        setConnectTimeout(env.getRequiredProperty("$envKeyPrefix.rest.timeout.connect.ms", Int::class.java))
+        setReadTimeout(env.getRequiredProperty("$envKeyPrefix.rest.timeout.read.ms", Int::class.java))
     }
 
     val restTemplate = RestTemplate(BufferingClientHttpRequestFactory(requestFactory))
 
+    val user = env.getRequiredProperty("$envKeyPrefix.rest.user")
+    val password = env.getRequiredProperty("$envKeyPrefix.rest.password")
     val authorizationInterceptor = BasicAuthorizationInterceptor(user, password)
 
     restTemplate.interceptors.add(authorizationInterceptor)

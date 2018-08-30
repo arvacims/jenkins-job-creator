@@ -27,7 +27,7 @@ class JobCreatorController(private val jenkinsService: JenkinsService) {
     }
 
     @PostMapping("/create/{project}/{branch}")
-    fun createOrUpdateJob(@PathVariable project: String, @PathVariable branch: String) {
+    fun createOrUpdateJobs(@PathVariable project: String, @PathVariable branch: String) {
         jenkinsService.createOrUpdateJobs(project, branch)
     }
 

@@ -7,12 +7,12 @@ import org.springframework.stereotype.Component
 import javax.annotation.PostConstruct
 
 @Component
-class GerritServerConnector(
+class GerritStreamConnector(
         private val gerritConfig: GerritConfig,
         private val gerritEventListener: GerritEventListener
 ) {
 
-    private val log = LoggerFactory.getLogger(GerritServerConnector::class.java)
+    private val log = LoggerFactory.getLogger(GerritStreamConnector::class.java)
 
     @PostConstruct
     private fun init() {

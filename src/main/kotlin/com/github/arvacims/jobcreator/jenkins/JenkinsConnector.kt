@@ -1,6 +1,6 @@
 package com.github.arvacims.jobcreator.jenkins
 
-import com.github.arvacims.jobcreator.restTemplate
+import com.github.arvacims.jobcreator.restTemplateJenkins
 import org.springframework.core.env.Environment
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -9,21 +9,13 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
-import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 
 @Component
 class JenkinsConnector(env: Environment) {
 
-    private val jenkinsUrl = env.getRequiredProperty("jenkins.baseUrl")
-    private val jenkinsUser = env.getRequiredProperty("jenkins.user")
-    private val jenkinsPassword = env.getRequiredProperty("jenkins.password")
-
-    private val restTemplate: RestTemplate
-
-    init {
-        restTemplate = restTemplate(env, jenkinsUser, jenkinsPassword)
-    }
+    private val jenkinsUrl = env.getRequiredProperty("jenkins.rest.baseUrl")
+    private val restTemplate = restTemplateJenkins(env)
 
     fun createJob(jobName: String, configXml: String) {
         val uri = UriComponentsBuilder.fromHttpUrl("$jenkinsUrl/createItem")
