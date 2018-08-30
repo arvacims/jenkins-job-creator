@@ -1,4 +1,6 @@
-/.idea/
-/target/
 /*.iml
+/.idea/
 /src/test/resources/application.yml
+/src/test/resources/id_rsa
+/src/test/resources/id_rsa.pub
+/target/
